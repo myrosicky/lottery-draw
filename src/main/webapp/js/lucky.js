@@ -155,7 +155,7 @@ $(function () {
         //ajax获奖结果结束
 
         //此为人工写入获奖结果
-        randomLuckyArr();
+        //randomLuckyArr();
         setTimeout(function () {
             $("#stop").show(500);
         }, 1000)
