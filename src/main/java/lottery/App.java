@@ -326,7 +326,10 @@ public class App {
 	DrawResult luckyDraw(@RequestParam("lucky_num") Integer totalLuckyNum, @RequestParam("lucky_prize") Integer tablePrizeId){
 		DrawResult rtn = new DrawResult();
 		rtn.setRes(1);
-		List<Profile> luckyResult = new ArrayList<>(totalLuckyNum);
+		List<Profile> luckyResult = tablePrizeLuckyGuyMap.get(tablePrizeId);
+		if(luckyResult == null){
+			luckyResult = new ArrayList<>(totalLuckyNum);
+		}
 		if(!profileList.isEmpty()){
 			ThreadLocalRandom tlr = ThreadLocalRandom.current();
 			for(int i = 0; i < totalLuckyNum; i++){

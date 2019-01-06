@@ -18,12 +18,12 @@ $(function () {
      图片预加载
      */
     function loadImage(arr, callback) {
-        var loadImageLen = 1;
+    	var loadImageLen = 0;
         var arrLen = arr.length;
         $('.all_number').html("/" + arrLen);
         if(arrLen > 0){
 	        for (var i = 0; i < arrLen; i++) {
-	            var img = new Image(); //创建一个Image对象，实现图片的预下载
+	            let img = new Image(); //创建一个Image对象，实现图片的预下载
 	            img.onload = function () {
 	                img.onload = null;
 	                ++loadImageLen;
@@ -32,7 +32,7 @@ $(function () {
 	                    callback(img); //所有图片加载成功回调；
 	                }
 	                ;
-	            }
+	            };
 	            img.src = arr[i].image;
 	        }
         }else{
