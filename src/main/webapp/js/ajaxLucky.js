@@ -36,7 +36,7 @@ $(function () {
 	            img.src = arr[i].image;
 	        }
         }else{
-        	callback(img);
+        	callback(null);
         }
     }
     
