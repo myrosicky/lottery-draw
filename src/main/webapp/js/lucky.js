@@ -84,6 +84,7 @@ $(function () {
      传入当前中奖数组中单个的key
      */
     function showLuckyPeople(num) {
+    	console.log("fuck u ");
         setTimeout(function () {
             var $luckyEle = $('<img class="lucky_icon" />');
             var $userName = $('<p class="lucky_userName"></p>');
@@ -92,7 +93,7 @@ $(function () {
             $('.mask').append($fragEle);
             $(".mask").fadeIn(200);
             $luckyEle.attr('src', personArray[Obj.luckyResult[num]].image);
-            $userName.text(personArray[Obj.luckyResult[num]].name)
+            $userName.text(personArray[Obj.luckyResult[num]].name);
             $fragEle.animate({
                 'left': '50%',
                 'top': '50%',
@@ -112,6 +113,8 @@ $(function () {
                         $luckyEle.attr('class', 'lpl_userImage').attr('style', '');
                         $userName.attr('class', 'lpl_userName').attr('style', '');
                         $fragEle.attr('class', 'lpl_userInfo').attr('style', '');
+                        console.log("fuck u $fragEle:" + $fragEle.html());
+                        
                         $('.lpl_list.active').append($fragEle);
                     })
                 }, 1000)

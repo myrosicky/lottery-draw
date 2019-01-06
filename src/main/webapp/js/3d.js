@@ -72,13 +72,10 @@
             var index = 0, elements = $('.element').length;
             for (var i = 0; i < elements; i++) {
                 var element = $('.element')[i];
-                console.log("!!settings.data[i]:" + (!!settings.data[i]));
                 if (!!settings.data[i]) {
                     $(element).css('background-image', 'url(' + settings.data[i].image + ')');
                 } else {
                 	index >= (settings.data.length - 1) ? index = 0 : ++index;
-                    console.log("settings.data:" + JSON.stringify(settings.data));
-                    console.log("index:" + index);
                     console.log("settings.data[index]:" + settings.data[index]);
                     $(element).css('background-image', 'url(' + settings.data[index].image + ')');
                 }

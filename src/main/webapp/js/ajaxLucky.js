@@ -18,21 +18,25 @@ $(function () {
      图片预加载
      */
     function loadImage(arr, callback) {
-        var loadImageLen = 0;
+        var loadImageLen = 1;
         var arrLen = arr.length;
         $('.all_number').html("/" + arrLen);
-        for (var i = 0; i < arrLen; i++) {
-            var img = new Image(); //创建一个Image对象，实现图片的预下载
-            img.onload = function () {
-                img.onload = null;
-                ++loadImageLen;
-                $(".current_number").html(loadImageLen);
-                if (loadImageLen == arrLen) {
-                    callback(img); //所有图片加载成功回调；
-                }
-                ;
-            }
-            img.src = arr[i].image;
+        if(arrLen > 0){
+	        for (var i = 0; i < arrLen; i++) {
+	            var img = new Image(); //创建一个Image对象，实现图片的预下载
+	            img.onload = function () {
+	                img.onload = null;
+	                ++loadImageLen;
+	                $(".current_number").html(loadImageLen);
+	                if (loadImageLen == arrLen) {
+	                    callback(img); //所有图片加载成功回调；
+	                }
+	                ;
+	            }
+	            img.src = arr[i].image;
+	        }
+        }else{
+        	callback(img);
         }
     }
     
@@ -51,18 +55,21 @@ $(function () {
 	             tablePrizeArray = data.tablePrize;
 	             console.log("data.tablePrize:" + JSON.stringify(data.tablePrize));
 	             initTablePrize(tablePrizeArray);
+	             initLuckyPeople(data.tablePrizeLuckyPeople);
 	             loadImage(personArray, function (img) {
 	                $('.loader_file').hide();
-	            })
-	             Obj.M = $('.container').lucky({
-		             row : 7, //每排显示个数  必须为奇数
-		             col : 7, //每列显示个数  必须为奇数
-		             depth : 6, //纵深度
-		             iconW : 30, //图片的宽
-		             iconH : 30, //图片的高
-		             iconRadius : 8, //图片的圆角
-		             data : personArray, //数据的地址数组
 	             });
+	             if(personArray != null && personArray.length > 0){
+		             Obj.M = $('.container').lucky({
+			             row : 7, //每排显示个数  必须为奇数
+			             col : 7, //每列显示个数  必须为奇数
+			             depth : 6, //纵深度
+			             iconW : 30, //图片的宽
+			             iconH : 30, //图片的高
+			             iconRadius : 8, //图片的圆角
+			             data : personArray, //数据的地址数组
+		             });
+	             }
 	         }
     	 }
      });
@@ -73,18 +80,41 @@ $(function () {
      
     function initTablePrize(arr){
     	var tablePrizeHtml = "";
+    	var tablePrizeLuckPeopleHtml = "";
         var arrLen = arr.length;
         for (var i = 0; i < arrLen; i++) {
         	tablePrizeHtml += "<img class=\"lucky_prize_show none\" data-index=\""+arr[i].id+"\" src=\""+arr[i].image+"\" alt=\""+arr[i].name+"\"/>";
+        	tablePrizeLuckPeopleHtml += "<div class=\"lpl_list clearfix none\"></div>";
         }
         $(".lucky_prize_picture").append(tablePrizeHtml);
+        $(".lucky_people_list").append(tablePrizeLuckPeopleHtml);
     }
 
+    function initLuckyPeople(tablePrizeLuckyPeopleObj){
+    	console.log("tablePrizeLuckyPeopleObj:" + JSON.stringify(tablePrizeLuckyPeopleObj));
+        for (var tablePrizeId in tablePrizeLuckyPeopleObj) {
+        	console.log("tablePrizeLuckyPeopleObj.tablePrizeId:" + tablePrizeId);
+            for(var num=0, length = tablePrizeLuckyPeopleObj[tablePrizeId].length; num < length; num++){
+        		var $luckyEle = $('<img class="lucky_icon" />');
+                var $userName = $('<p class="lucky_userName"></p>');
+                var $fragEle = $('<div class="lucky_userInfo"></div>');
+                $fragEle.append($luckyEle, $userName);
+                $luckyEle.attr('src', tablePrizeLuckyPeopleObj[tablePrizeId][num].image);
+                $userName.text(tablePrizeLuckyPeopleObj[tablePrizeId][num].name);
+                $luckyEle.attr('class', 'lpl_userImage').attr('style', '');
+                $userName.attr('class', 'lpl_userName').attr('style', '');
+                $fragEle.attr('class', 'lpl_userInfo').attr('style', '');
+                $('.lpl_list').eq(tablePrizeId - 1).append($fragEle);
+        	}
+        }
+    }
+    
     /*
      中奖人员展示效果
      传入当前中奖数组中单个的key
      */
     function showLuckyPeople(num) {
+    	console.log("showLuckyPeople(num):num:" + num);
         setTimeout(function () {
             var $luckyEle = $('<img class="lucky_icon" />');
             var $userName = $('<p class="lucky_userName"></p>');
@@ -92,9 +122,13 @@ $(function () {
             $fragEle.append($luckyEle, $userName);
             $('.mask').append($fragEle);
             $(".mask").fadeIn(200);
-            $luckyEle.attr('src', personArray[Obj.luckyResult[num]].image);
+            //$luckyEle.attr('src', personArray[Obj.luckyResult[num]].image);
             //$userName.text(personArray[Obj.luckyResult[num]].name)
+            $luckyEle.attr('src', Obj.luckyResult[num].image);
             $userName.text(Obj.luckyResult[num].name);
+            console.log("$luckyEle:" + $luckyEle.html());
+            console.log("$userName:" + $userName.html());
+            
             $fragEle.animate({
                 'left': '50%',
                 'top': '50%',
@@ -114,6 +148,7 @@ $(function () {
                         $luckyEle.attr('class', 'lpl_userImage').attr('style', '');
                         $userName.attr('class', 'lpl_userName').attr('style', '');
                         $fragEle.attr('class', 'lpl_userInfo').attr('style', '');
+                        console.log("$fragEle:" + $fragEle.html());
                         $('.lpl_list.active').append($fragEle);
                     })
                 }, 1000)
@@ -132,6 +167,7 @@ $(function () {
         $(".container").hide();
         $(this).hide();
         var i = 0;
+        console.log("Obj.luckyResult:" + JSON.stringify(Obj.luckyResult));
         for (; i < Obj.luckyResult.length; i++) {
             showLuckyPeople(i);
         }
@@ -147,6 +183,7 @@ $(function () {
         //此为ajax请求获奖结果
         $.get('/lucky/index',{"lucky_num" : Obj.luckyNum,"lucky_prize":Obj.luckyPrize},function(data){
         	  if(data.res == 1){
+        		  console.log(" data.luckyResult:" +  JSON.stringify(data.luckyResult));
         		  Obj.luckyResult = data.luckyResult;
         		  updateAttendanceCnt(data.nextAvailableAttendance);
                $("#stop").show(500);

@@ -6,7 +6,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.poi.sl.usermodel.Sheet;
@@ -40,7 +42,7 @@ public class App {
 	
 	private List<Profile> profileList;
 	private List<TablePrize> tablePrizeList;
-	
+	private Map<Integer, List<Profile>> tablePrizeLuckyGuyMap;
 	
 	class Profile implements Serializable{
 		 private String id;
@@ -127,6 +129,7 @@ public class App {
 		private int res;
 		private List<Profile> data;
 		private List<TablePrize> tablePrize;
+		private Map<Integer, List<Profile>> tablePrizeLuckyPeople;
 		
 		public int getRes() {
 			return res;
@@ -146,6 +149,14 @@ public class App {
 		public void setTablePrize(List<TablePrize> tablePrize) {
 			this.tablePrize = tablePrize;
 		}
+		public Map<Integer, List<Profile>> getTablePrizeLuckyPeople() {
+			return tablePrizeLuckyPeople;
+		}
+		public void setTablePrizeLuckyPeople(
+				Map<Integer, List<Profile>> tablePrizeLuckyPeople) {
+			this.tablePrizeLuckyPeople = tablePrizeLuckyPeople;
+		}
+		
 		
 		
 	}
@@ -165,9 +176,10 @@ public class App {
 		// load table prize
 		if(tablePrizeList == null){
 			tablePrizeList = loadTablePrize();
+			tablePrizeLuckyGuyMap = new HashMap<Integer, List<Profile>>(tablePrizeList.size()*2);
 		}
 		lotteryData.setTablePrize(tablePrizeList);
-		
+		lotteryData.setTablePrizeLuckyPeople(tablePrizeLuckyGuyMap);
 		return lotteryData;
 	}
 	
@@ -316,15 +328,12 @@ public class App {
 		rtn.setRes(1);
 		List<Profile> luckyResult = new ArrayList<>(totalLuckyNum);
 		if(!profileList.isEmpty()){
-			
 			ThreadLocalRandom tlr = ThreadLocalRandom.current();
 			for(int i = 0; i < totalLuckyNum; i++){
 				int nextLuckyNum = tlr.nextInt(0, profileList.size());
 				Profile luckyProfile = profileList.remove(nextLuckyNum);
 				luckyResult.add(luckyProfile);
 			}
-			
-			
 		}
 		String tablePrizeName = null;
 		for(TablePrize tablePrize : tablePrizeList){
@@ -337,6 +346,7 @@ public class App {
 		log.info("");
 		
 		rtn.setLuckyResult(luckyResult);
+		tablePrizeLuckyGuyMap.put(tablePrizeId, luckyResult);
 		rtn.setNextAvailableAttendance(profileList.size() + "");
 		return rtn;
 	}
