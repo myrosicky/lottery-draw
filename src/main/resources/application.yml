@@ -6,3 +6,8 @@ spring:
     view:
       prefix: 
       suffix: .html
+      
+logging:
+  file: log/draw-result.log
+  level.lottery.App: DEBUG
+  

@@ -1,4 +1,5 @@
     var personArray = new Array;
+    var tablePrizeArray = new Array();
     
 //    
 //        personArray.push({

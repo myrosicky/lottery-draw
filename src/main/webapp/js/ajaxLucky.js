@@ -44,10 +44,13 @@ $(function () {
     	 dataType: 'json',
     	 async: false,
     	 success: function(data){
-	    	 console.log("data:" + JSON.stringify(data));
+    		 console.log("data:" + JSON.stringify(data));
 	         if(data.res == 1){
 	             personArray = data.data; //此为数组
-	             console.log("personArray:" + JSON.stringify(personArray));
+	             updateAttendanceCnt(personArray.length);
+	             tablePrizeArray = data.tablePrize;
+	             console.log("data.tablePrize:" + JSON.stringify(data.tablePrize));
+	             initTablePrize(tablePrizeArray);
 	             loadImage(personArray, function (img) {
 	                $('.loader_file').hide();
 	            })
@@ -64,6 +67,18 @@ $(function () {
     	 }
      });
      
+     function updateAttendanceCnt(attendanceCnt){
+    	 $(".lucky_number").html(attendanceCnt);
+     }
+     
+    function initTablePrize(arr){
+    	var tablePrizeHtml = "";
+        var arrLen = arr.length;
+        for (var i = 0; i < arrLen; i++) {
+        	tablePrizeHtml += "<img class=\"lucky_prize_show none\" data-index=\""+arr[i].id+"\" src=\""+arr[i].image+"\" alt=\""+arr[i].name+"\"/>";
+        }
+        $(".lucky_prize_picture").append(tablePrizeHtml);
+    }
 
     /*
      中奖人员展示效果
@@ -78,7 +93,8 @@ $(function () {
             $('.mask').append($fragEle);
             $(".mask").fadeIn(200);
             $luckyEle.attr('src', personArray[Obj.luckyResult[num]].image);
-            $userName.text(personArray[Obj.luckyResult[num]].name)
+            //$userName.text(personArray[Obj.luckyResult[num]].name)
+            $userName.text(Obj.luckyResult[num].name);
             $fragEle.animate({
                 'left': '50%',
                 'top': '50%',
@@ -132,6 +148,7 @@ $(function () {
         $.get('/lucky/index',{"lucky_num" : Obj.luckyNum,"lucky_prize":Obj.luckyPrize},function(data){
         	  if(data.res == 1){
         		  Obj.luckyResult = data.luckyResult;
+        		  updateAttendanceCnt(data.nextAvailableAttendance);
                $("#stop").show(500);
         	  }
         },'json')
