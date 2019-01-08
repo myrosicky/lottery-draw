@@ -121,10 +121,10 @@ body {
 }
 .lpl_userInfo{
     width:84px;
-    height:100px;
+    height:125px;
     text-align: center;
     float: left;
-    margin-bottom:10px;
+    margin-top: 30px;
 }
 .lpl_userImage{
     width:60px;
@@ -165,7 +165,7 @@ body {
     width:280px;
 }
 .lucky_people_list{
-    width:440px;
+    width:460px;
 }
 .flex{
     display: flex;
@@ -236,7 +236,7 @@ button:focus{
     font-size: 24px;
 }
 .lucky_prize_title{
-    height:50px;
+    //height:50px;
     background-color: #f22;
     color:#fff;
     text-align: center;
@@ -267,4 +267,42 @@ button:focus{
 
 .none {
     display: none;
+}
+
+.userStatus {
+    width: 50px;
+    height: 35px;
+    position: relative;
+    margin: 30px auto 0;
+    background: white;
+    border-radius: 5px;
+    margin-top: -120px;
+    margin-left: 40px;
+    text-align: center;
+    line-height: 35px;
+    color: #0f2454;
+  }
+
+.userStatus:after {
+    content: '';
+    width: 0;
+    height: 0;
+    position: absolute;
+    top: 33px;
+    left: 0px;
+    border: solid 8px;
+    border-color:  white transparent  transparent transparent ;
+    font-size: 0;
+}
+
+.stripe{
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(90deg,rgba(168, 103, 103, 0.5) 50%,transparent 0),               
+  			  linear-gradient(rgba(110, 61, 61, 0.5) 50%,transparent 0);
+  background-size: 10px 10px;
+  margin-bottom: -60px;
+  margin-left: 10px;
+  z-index: 99;
+  position: relative;
 }

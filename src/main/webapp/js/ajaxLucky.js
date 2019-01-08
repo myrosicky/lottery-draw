@@ -56,6 +56,7 @@ $(function () {
 	             console.log("data.tablePrize:" + JSON.stringify(data.tablePrize));
 	             initTablePrize(tablePrizeArray);
 	             initLuckyPeople(data.tablePrizeLuckyPeople);
+	             initEvent();
 	             loadImage(personArray, function (img) {
 	                $('.loader_file').hide();
 	             });
@@ -97,16 +98,58 @@ $(function () {
             for(var num=0, length = tablePrizeLuckyPeopleObj[tablePrizeId].length; num < length; num++){
         		var $luckyEle = $('<img class="lucky_icon" />');
                 var $userName = $('<p class="lucky_userName"></p>');
+                var $userStatus = $('<div class="userStatus"></div>');
                 var $fragEle = $('<div class="lucky_userInfo"></div>');
                 $fragEle.append($luckyEle, $userName);
-                $luckyEle.attr('src', tablePrizeLuckyPeopleObj[tablePrizeId][num].image);
-                $userName.text(tablePrizeLuckyPeopleObj[tablePrizeId][num].name);
+                
+                let luckyPeople = tablePrizeLuckyPeopleObj[tablePrizeId][num];
+                $luckyEle.attr('src', luckyPeople.image);
+                $userName.text(luckyPeople.name);
+                $fragEle.attr('id', luckyPeople.id);
+                if(luckyPeople.status != null && luckyPeople.status != undefined && luckyPeople.status.length > 0){
+                	$userStatus.html(luckyPeople.status);
+                	$fragEle.append($userStatus);
+                }
                 $luckyEle.attr('class', 'lpl_userImage').attr('style', '');
                 $userName.attr('class', 'lpl_userName').attr('style', '');
                 $fragEle.attr('class', 'lpl_userInfo').attr('style', '');
                 $('.lpl_list').eq(tablePrizeId - 1).append($fragEle);
         	}
         }
+    }
+    
+    function initEvent(){
+    	$(".lpl_userInfo").dblclick(function(){
+    		toggleLuckyPeople($(this));
+    	});
+    }
+    
+    function toggleLuckyPeople($fragEle){
+    	var $stripe = $('<div class="stripe" ></div>');
+    	var $existStripe = $fragEle.find("div.stripe");
+    	console.log("$fragEle.html()" + $fragEle.html());
+    	console.log("$existStripe.length:" + $existStripe.length);
+    	if($existStripe.length > 0){
+    		$existStripe.remove();
+    		$.ajax({
+    	    	 url: '/lucky/addIndex',
+    	    	 data: {'lucky_prize': Obj.luckyPrize, 'profileId': $fragEle.attr('id')},
+    	    	 dataType: 'json',
+    	    	 method: 'POST',
+    	    	 async: false,
+    	    	 success: function(data){}
+    	     });
+    	}else{
+    		$fragEle.prepend($stripe);
+    		$.ajax({
+   	    	 url: '/lucky/removeIndex',
+   	    	 data: {'lucky_prize': Obj.luckyPrize, 'profileId': $fragEle.attr('id')},
+   	    	 dataType: 'json',
+   	    	 method: 'POST',
+   	    	 async: false,
+   	    	 success: function(data){}
+   	     });
+    	}
     }
     
     /*
@@ -118,16 +161,17 @@ $(function () {
         setTimeout(function () {
             var $luckyEle = $('<img class="lucky_icon" />');
             var $userName = $('<p class="lucky_userName"></p>');
+            var $userStatus = $('<div class="userStatus"></div>');
             var $fragEle = $('<div class="lucky_userInfo"></div>');
             $fragEle.append($luckyEle, $userName);
             $('.mask').append($fragEle);
             $(".mask").fadeIn(200);
             //$luckyEle.attr('src', personArray[Obj.luckyResult[num]].image);
             //$userName.text(personArray[Obj.luckyResult[num]].name)
-            $luckyEle.attr('src', Obj.luckyResult[num].image);
-            $userName.text(Obj.luckyResult[num].name);
-            console.log("$luckyEle:" + $luckyEle.html());
-            console.log("$userName:" + $userName.html());
+            let luckyPeople = Obj.luckyResult[num];
+            $luckyEle.attr('src', luckyPeople.image);
+            $userName.text(luckyPeople.name);
+            $fragEle.attr('id', luckyPeople.id);
             
             $fragEle.animate({
                 'left': '50%',
@@ -148,7 +192,11 @@ $(function () {
                         $luckyEle.attr('class', 'lpl_userImage').attr('style', '');
                         $userName.attr('class', 'lpl_userName').attr('style', '');
                         $fragEle.attr('class', 'lpl_userInfo').attr('style', '');
-                        console.log("$fragEle:" + $fragEle.html());
+                        if(luckyPeople.status != null && luckyPeople.status != undefined && luckyPeople.status.length > 0){
+                        	$userStatus.html(luckyPeople.status);
+                        	$fragEle.append($userStatus);
+                        }
+                        initEvent();
                         $('.lpl_list.active').append($fragEle);
                     })
                 }, 1000)
