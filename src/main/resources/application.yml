@@ -9,5 +9,9 @@ spring:
       
 logging:
   file: log/draw-result.log
-  level.lottery.App: DEBUG
+  level:
+    lottery:
+      App: INFO
+    
+  
   

@@ -98,13 +98,15 @@ $(function () {
             for(var num=0, length = tablePrizeLuckyPeopleObj[tablePrizeId].length; num < length; num++){
         		var $luckyEle = $('<img class="lucky_icon" />');
                 var $userName = $('<p class="lucky_userName"></p>');
+                var $userId = $('<p class="lucky_userName"></p>');
                 var $userStatus = $('<div class="userStatus"></div>');
                 var $fragEle = $('<div class="lucky_userInfo"></div>');
-                $fragEle.append($luckyEle, $userName);
+                $fragEle.append($luckyEle, $userName, $userId);
                 
                 let luckyPeople = tablePrizeLuckyPeopleObj[tablePrizeId][num];
                 $luckyEle.attr('src', luckyPeople.image);
                 $userName.text(luckyPeople.name);
+                $userId.text("(" + luckyPeople.id + ")");
                 $fragEle.attr('id', luckyPeople.id);
                 if(luckyPeople.status != null && luckyPeople.status != undefined && luckyPeople.status.length > 0){
                 	$userStatus.html(luckyPeople.status);
@@ -112,6 +114,7 @@ $(function () {
                 }
                 $luckyEle.attr('class', 'lpl_userImage').attr('style', '');
                 $userName.attr('class', 'lpl_userName').attr('style', '');
+                $userId.attr('class', 'lpl_userName').attr('style', '');
                 $fragEle.attr('class', 'lpl_userInfo').attr('style', '');
                 $('.lpl_list').eq(tablePrizeId - 1).append($fragEle);
         	}
@@ -161,9 +164,10 @@ $(function () {
         setTimeout(function () {
             var $luckyEle = $('<img class="lucky_icon" />');
             var $userName = $('<p class="lucky_userName"></p>');
+            var $userId = $('<p class="lucky_userName"></p>');
             var $userStatus = $('<div class="userStatus"></div>');
             var $fragEle = $('<div class="lucky_userInfo"></div>');
-            $fragEle.append($luckyEle, $userName);
+            $fragEle.append($luckyEle, $userName, $userId);
             $('.mask').append($fragEle);
             $(".mask").fadeIn(200);
             //$luckyEle.attr('src', personArray[Obj.luckyResult[num]].image);
@@ -171,6 +175,7 @@ $(function () {
             let luckyPeople = Obj.luckyResult[num];
             $luckyEle.attr('src', luckyPeople.image);
             $userName.text(luckyPeople.name);
+            $userId.text("(" + luckyPeople.id + ")");
             $fragEle.attr('id', luckyPeople.id);
             
             $fragEle.animate({
@@ -191,6 +196,7 @@ $(function () {
                         $(".mask").fadeOut(0);
                         $luckyEle.attr('class', 'lpl_userImage').attr('style', '');
                         $userName.attr('class', 'lpl_userName').attr('style', '');
+                        $userId.attr('class', 'lpl_userName').attr('style', '');
                         $fragEle.attr('class', 'lpl_userInfo').attr('style', '');
                         if(luckyPeople.status != null && luckyPeople.status != undefined && luckyPeople.status.length > 0){
                         	$userStatus.html(luckyPeople.status);

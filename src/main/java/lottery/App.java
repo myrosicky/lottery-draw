@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
-import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -196,7 +195,7 @@ public class App {
 	@PostMapping("/lucky/addIndex")
 	@ResponseBody
 	void addIndex(@RequestParam("lucky_prize") Integer tablePrizeId, @RequestParam("profileId") String profileId){
-		log.debug("tablePrizeId:" + tablePrizeId + ", profileId:" + profileId);
+		log.debug("add index, tablePrizeId:" + tablePrizeId + ", profileId:" + profileId);
 		List<Profile> luckyGuys = tablePrizeLuckyGuyMap.get(tablePrizeId);
 		for(int i = 0, length = deletedProfileList.size(); i < length ; i++){
 			Profile profile = deletedProfileList.get(i);
@@ -211,7 +210,7 @@ public class App {
 	@PostMapping("/lucky/removeIndex")
 	@ResponseBody
 	void removeIndex(@RequestParam("lucky_prize") Integer tablePrizeId, @RequestParam("profileId") String profileId){
-		log.debug("tablePrizeId:" + tablePrizeId + ", profileId:" + profileId);
+		log.debug("removeIndex, tablePrizeId:" + tablePrizeId + ", profileId:" + profileId);
 		List<Profile> luckyGuys = tablePrizeLuckyGuyMap.get(tablePrizeId);
 		for(int i = 0, length = luckyGuys.size(); i < length ; i++){
 			Profile profile = luckyGuys.get(i);
@@ -261,9 +260,6 @@ public class App {
 					break;
 				}
 				String prizeName = row.getCell(0).getStringCellValue();
-				if(log.isDebugEnabled()){
-					log.debug("rowIndex:" + rowIndex + ", prizeName:" + prizeName);
-				}
 				if(prizeName == null || prizeName.trim().length()==0){
 					break;
 				}
@@ -325,9 +321,6 @@ public class App {
 					} catch (Exception e1) {
 						e1.printStackTrace();
 					}
-				}
-				if(log.isDebugEnabled()){
-					log.debug("rowIndex:" + rowIndex + ", id:" + id);
 				}
 				if(id == null || id.trim().length()==0){
 					break;
@@ -447,6 +440,22 @@ public class App {
 		}
 		tablePrizeLuckyGuyMap.put(tablePrizeId, luckyResult);
 		rtn.setNextAvailableAttendance(profileList.size() + "");
+		
+		if(tablePrizeLuckyGuyMap.size() == tablePrizeList.size()){ // the end of lottery draw
+			log.info("最终结果（或许有多个最终结果，请以最后一个为准） >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+			for(TablePrize prize : tablePrizeList){
+				log.info("--------------------" + prize.getName() + "--------------------");
+				StringBuilder luckGuys = new StringBuilder(100);
+				for(Profile profile : tablePrizeLuckyGuyMap.get(prize.getId())){
+					luckGuys.append(", ").append(profile.getName()).append("(").append(profile.getId()).append(")");
+				}
+				luckGuys = luckGuys.deleteCharAt(0);
+				log.info(luckGuys.toString());
+				log.info("");
+			}
+			
+		}
+		
 		return rtn;
 	}
 	
