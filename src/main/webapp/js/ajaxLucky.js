@@ -1,10 +1,40 @@
+var Obj = {};
+    
+function toggleLuckyPeople(fragEle){
+	var $fragEle = $(fragEle);
+	var $stripe = $('<div class="stripe" ></div>');
+	var $existStripe = $fragEle.find("div.stripe");
+	console.log("$fragEle.html()" + $fragEle.html());
+	console.log("$existStripe.length:" + $existStripe.length);
+	if($existStripe.length > 0){
+		$existStripe.remove();
+		$.ajax({
+	    	 url: '/lucky/addIndex',
+	    	 data: {'lucky_prize': Obj.luckyPrize, 'profileId': $fragEle.attr('id')},
+	    	 dataType: 'json',
+	    	 method: 'POST',
+	    	 async: false,
+	    	 success: function(data){}
+	     });
+	}else{
+		$fragEle.prepend($stripe);
+		$.ajax({
+	    	 url: '/lucky/removeIndex',
+	    	 data: {'lucky_prize': Obj.luckyPrize, 'profileId': $fragEle.attr('id')},
+	    	 dataType: 'json',
+	    	 method: 'POST',
+	    	 async: false,
+	    	 success: function(data){}
+	     });
+	}
+}
+
 $(function () {
     /*
      luckyNum为每次抽几人
      luckyResult为抽奖结果的集合（数组）
      luckyNum为5那么luckyResult的length也为5
      */
-    var Obj = {};
     Obj.luckyResult = [];
     Obj.luckyPrize = '';
     Obj.luckyNum = $(".select_lucky_number").val();
@@ -56,7 +86,7 @@ $(function () {
 	             console.log("data.tablePrize:" + JSON.stringify(data.tablePrize));
 	             initTablePrize(tablePrizeArray);
 	             initLuckyPeople(data.tablePrizeLuckyPeople);
-	             initEvent();
+	             //initEvent();
 	             loadImage(personArray, function (img) {
 	                $('.loader_file').hide();
 	             });
@@ -100,7 +130,7 @@ $(function () {
                 var $userName = $('<p class="lucky_userName"></p>');
                 var $userId = $('<p class="lucky_userName"></p>');
                 var $userStatus = $('<div class="userStatus"></div>');
-                var $fragEle = $('<div class="lucky_userInfo"></div>');
+                var $fragEle = $('<div class="lucky_userInfo" ondblclick="toggleLuckyPeople(this)"></div>');
                 $fragEle.append($luckyEle, $userName, $userId);
                 
                 let luckyPeople = tablePrizeLuckyPeopleObj[tablePrizeId][num];
@@ -109,8 +139,8 @@ $(function () {
                 $userId.text("(" + luckyPeople.id + ")");
                 $fragEle.attr('id', luckyPeople.id);
                 if(luckyPeople.status != null && luckyPeople.status != undefined && luckyPeople.status.length > 0){
-                	$userStatus.html(luckyPeople.status);
-                	$fragEle.append($userStatus);
+                	$userStatus.html('<div class="userStatusText">' + luckyPeople.status + '</div>');
+                	$luckyEle.after($userStatus);
                 }
                 $luckyEle.attr('class', 'lpl_userImage').attr('style', '');
                 $userName.attr('class', 'lpl_userName').attr('style', '');
@@ -121,39 +151,14 @@ $(function () {
         }
     }
     
+    /*
     function initEvent(){
     	$(".lpl_userInfo").dblclick(function(){
     		toggleLuckyPeople($(this));
     	});
     }
+    */
     
-    function toggleLuckyPeople($fragEle){
-    	var $stripe = $('<div class="stripe" ></div>');
-    	var $existStripe = $fragEle.find("div.stripe");
-    	console.log("$fragEle.html()" + $fragEle.html());
-    	console.log("$existStripe.length:" + $existStripe.length);
-    	if($existStripe.length > 0){
-    		$existStripe.remove();
-    		$.ajax({
-    	    	 url: '/lucky/addIndex',
-    	    	 data: {'lucky_prize': Obj.luckyPrize, 'profileId': $fragEle.attr('id')},
-    	    	 dataType: 'json',
-    	    	 method: 'POST',
-    	    	 async: false,
-    	    	 success: function(data){}
-    	     });
-    	}else{
-    		$fragEle.prepend($stripe);
-    		$.ajax({
-   	    	 url: '/lucky/removeIndex',
-   	    	 data: {'lucky_prize': Obj.luckyPrize, 'profileId': $fragEle.attr('id')},
-   	    	 dataType: 'json',
-   	    	 method: 'POST',
-   	    	 async: false,
-   	    	 success: function(data){}
-   	     });
-    	}
-    }
     
     /*
      中奖人员展示效果
@@ -166,7 +171,7 @@ $(function () {
             var $userName = $('<p class="lucky_userName"></p>');
             var $userId = $('<p class="lucky_userName"></p>');
             var $userStatus = $('<div class="userStatus"></div>');
-            var $fragEle = $('<div class="lucky_userInfo"></div>');
+            var $fragEle = $('<div class="lucky_userInfo" ondblclick="toggleLuckyPeople(this)"></div>');
             $fragEle.append($luckyEle, $userName, $userId);
             $('.mask').append($fragEle);
             $(".mask").fadeIn(200);
@@ -199,10 +204,10 @@ $(function () {
                         $userId.attr('class', 'lpl_userName').attr('style', '');
                         $fragEle.attr('class', 'lpl_userInfo').attr('style', '');
                         if(luckyPeople.status != null && luckyPeople.status != undefined && luckyPeople.status.length > 0){
-                        	$userStatus.html(luckyPeople.status);
-                        	$fragEle.append($userStatus);
+                        	$userStatus.html('<div class="userStatusText">' + luckyPeople.status + '</div>');
+                        	$luckyEle.after($userStatus);
                         }
-                        initEvent();
+                        //initEvent();
                         $('.lpl_list.active').append($fragEle);
                     })
                 }, 1000)
@@ -277,6 +282,8 @@ $(function () {
             $('.lucky_prize_left').removeClass('active');
         }
         Obj.luckyPrize = i;
+        $('#select_lucky_number').val(tablePrizeArray[i-1].amount);
+        Obj.luckyNum = $('#select_lucky_number').val();
         $('.lucky_prize_show').hide().eq(i - 1).show();
         $(".lucky_prize_title").html($('.lucky_prize_show').eq(i - 1).attr('alt'));
         $('.lpl_list').removeClass('active').hide().eq(i - 1).show().addClass('active');

@@ -121,15 +121,17 @@ public class App {
 	}
 	class TablePrize implements Serializable{
 		private int id;
-		 private String image;
-		 private String name;
+		private String image;
+		private String name;
+		private String amount;
 		 
 		 
-		public TablePrize(int id, String image, String name) {
+		public TablePrize(int id, String image, String name, String amount) {
 			super();
 			this.id = id;
 			this.image = image;
 			this.name = name;
+			this.amount = amount;
 		}
 		public int getId() {
 			return id;
@@ -148,6 +150,14 @@ public class App {
 		}
 		public void setName(String name) {
 			this.name = name;
+		}
+		
+		
+		public String getAmount() {
+			return amount;
+		}
+		public void setAmount(String amount) {
+			this.amount = amount;
 		}
 		@Override
 		public String toString() {
@@ -205,6 +215,7 @@ public class App {
 				break;
 			}
 		}
+		recordLuckyDrawResultIfNeed();
 	}
 	
 	@PostMapping("/lucky/removeIndex")
@@ -220,6 +231,7 @@ public class App {
 				break;
 			}
 		}
+		recordLuckyDrawResultIfNeed();
 	}
 	
 	@GetMapping("/lucky/data")
@@ -263,7 +275,19 @@ public class App {
 				if(prizeName == null || prizeName.trim().length()==0){
 					break;
 				}
-				rtn.add(new TablePrize(rowIndex + 1, "img/" + row.getCell(1).getStringCellValue().trim(), prizeName.trim()));
+				
+				String amount = "";
+				try{
+					amount = String.valueOf(((Double)row.getCell(2).getNumericCellValue()).intValue());
+				}catch(Exception e){
+					try {
+						amount = row.getCell(2).getStringCellValue();
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
+				}
+				
+				rtn.add(new TablePrize(rowIndex + 1, "img/" + row.getCell(1).getStringCellValue().trim(), prizeName.trim(), amount));
 				rowIndex++;
 			}
 			
@@ -292,9 +316,6 @@ public class App {
     	return rtn;
 
 	}
-	
-	
-	
 	
 	private List<Profile> loadProfiles(){
 		List<Profile> rtn =  new ArrayList<Profile>();
@@ -441,6 +462,12 @@ public class App {
 		tablePrizeLuckyGuyMap.put(tablePrizeId, luckyResult);
 		rtn.setNextAvailableAttendance(profileList.size() + "");
 		
+		recordLuckyDrawResultIfNeed();
+		
+		return rtn;
+	}
+	
+	private void recordLuckyDrawResultIfNeed(){
 		if(tablePrizeLuckyGuyMap.size() == tablePrizeList.size()){ // the end of lottery draw
 			log.info("最终结果（或许有多个最终结果，请以最后一个为准） >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 			for(TablePrize prize : tablePrizeList){
@@ -455,8 +482,6 @@ public class App {
 			}
 			
 		}
-		
-		return rtn;
 	}
 	
 	

@@ -125,7 +125,7 @@ body {
     text-align: center;
     float: left;
     margin-top: 30px;
-    margin-bottom: 25px;
+    margin-bottom: 45px;
     
 }
 .lpl_userImage{
@@ -158,7 +158,7 @@ body {
 .lucky_title{
     text-align: center;
     width:100%;
-    font-size:30px;
+    font-size:70px;
     font-weight: bold;
     color:darkorange;
     height:150px;
@@ -280,11 +280,13 @@ button:focus{
     margin: 30px auto 0;
     background: white;
     border-radius: 5px;
-	margin-top: -170px;
-    margin-left: 70px;
+	margin-top: -95px;
+    margin-left: 80px;
+    margin-bottom: 70px;
     text-align: center;
-    line-height: 35px;
+    //line-height: 35px;
     color: #0f2454;
+    display: table;
   }
 
 .userStatus:after {
@@ -297,6 +299,11 @@ button:focus{
     border: solid 8px;
     border-color:  white transparent  transparent transparent ;
     font-size: 0;
+}
+
+.userStatusText{
+	display: table-cell;
+	vertical-align: middle;
 }
 
 .stripe{
