@@ -70,7 +70,7 @@ public class App {
 	private List<TablePrize> tablePrizeList;
 	private Map<Integer, List<Profile>> tablePrizeLuckyGuyMap;
 	private ExecutorService executorService = Executors.newSingleThreadExecutor();
-	private boolean stopShuffle = true;
+	private volatile boolean stopShuffle = true;
 	
 	class Profile implements Serializable{
 		 private String id;
