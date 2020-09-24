@@ -12,9 +12,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
 
 import javax.imageio.ImageIO;
@@ -66,6 +69,8 @@ public class App {
 	private List<Profile> deletedProfileList = new  ArrayList<>(2);
 	private List<TablePrize> tablePrizeList;
 	private Map<Integer, List<Profile>> tablePrizeLuckyGuyMap;
+	private ExecutorService executorService = Executors.newSingleThreadExecutor();
+	private boolean stopShuffle = true;
 	
 	class Profile implements Serializable{
 		 private String id;
@@ -427,16 +432,45 @@ public class App {
 		}
 	}
 	
+	@GetMapping("/lucky/shuffle")
+	@ResponseBody
+	void shuffle(){
+		stopShuffle = false;
+		executorService.execute(new Runnable(){
+			@Override
+			public void run() {
+				if(!profileList.isEmpty()){
+					while(!stopShuffle){
+						doShuffle(profileList);
+					}
+				}
+			}
+		});
+	}
+	
+	private void doShuffle(List<?> list){
+		Collections.shuffle(profileList, ThreadLocalRandom.current());
+		Collections.reverse(profileList);
+		Collections.shuffle(profileList, ThreadLocalRandom.current());
+	}
+	
 	@GetMapping("/lucky/index")
 	@ResponseBody
 	DrawResult luckyDraw(@RequestParam("lucky_num") Integer totalLuckyNum, @RequestParam("lucky_prize") Integer tablePrizeId){
+
+		stopShuffle = true;
 		DrawResult rtn = new DrawResult();
 		rtn.setRes(1);
 		List<Profile> luckyCurrentResult = new ArrayList<>(totalLuckyNum);
 		if(!profileList.isEmpty()){
 			ThreadLocalRandom tlr = ThreadLocalRandom.current();
+			int size = profileList.size();
+			int divide = size/totalLuckyNum;
 			for(int i = 0; i < totalLuckyNum; i++){
-				int nextLuckyNum = tlr.nextInt(0, profileList.size());
+				int start = i * divide - i;
+				int end = start + divide;
+				int nextLuckyNum = tlr.nextInt(start, Math.max(Math.min(end, profileList.size()-1), start + 1)) ;
+				
 				Profile luckyProfile = profileList.remove(nextLuckyNum);
 				luckyCurrentResult.add(luckyProfile);
 			}

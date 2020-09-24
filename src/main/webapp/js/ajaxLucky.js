@@ -226,10 +226,21 @@ $(function () {
         $(".container").hide();
         $(this).hide();
         var i = 0;
-        console.log("Obj.luckyResult:" + JSON.stringify(Obj.luckyResult));
-        for (; i < Obj.luckyResult.length; i++) {
-            showLuckyPeople(i);
-        }
+
+        //此为ajax请求获奖结果
+        $.get('/lucky/index',{"lucky_num" : Obj.luckyNum,"lucky_prize":Obj.luckyPrize},function(data){
+        	  if(data.res == 1){
+        		  console.log(" data.luckyResult:" +  JSON.stringify(data.luckyResult));
+        		  Obj.luckyResult = data.luckyResult;
+        		  updateAttendanceCnt(data.nextAvailableAttendance);
+        		  console.log("Obj.luckyResult:" + JSON.stringify(Obj.luckyResult));
+        	        for (; i < Obj.luckyResult.length; i++) {
+        	            showLuckyPeople(i);
+        	        }
+        	  }
+        },'json');
+        //ajax获奖结果结束
+        
 
     })
     /*
@@ -240,14 +251,15 @@ $(function () {
         $(".container").show();
         Obj.M.open();
         //此为ajax请求获奖结果
-        $.get('/lucky/index',{"lucky_num" : Obj.luckyNum,"lucky_prize":Obj.luckyPrize},function(data){
-        	  if(data.res == 1){
-        		  console.log(" data.luckyResult:" +  JSON.stringify(data.luckyResult));
-        		  Obj.luckyResult = data.luckyResult;
-        		  updateAttendanceCnt(data.nextAvailableAttendance);
-               $("#stop").show(500);
-        	  }
-        },'json')
+        $.get('/lucky/shuffle',{},function(data){
+//        	  if(data.res == 1){
+//        		  console.log(" data.luckyResult:" +  JSON.stringify(data.luckyResult));
+//        		  Obj.luckyResult = data.luckyResult;
+//        		  updateAttendanceCnt(data.nextAvailableAttendance);
+//               $("#stop").show(500);
+//        	  }
+        },'json');
+        $("#stop").show(500);
         //ajax获奖结果结束
     })
     /*
